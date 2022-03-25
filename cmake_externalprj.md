@@ -20,12 +20,12 @@ ExternalProject_Add(leveldb
 URL是路径，还可以用URL_HASH来指定校验吗，检验下载的文件是否完好。
 一个外部项目的制作通常包含的过程是:download,update,patch,configure,build,install。
 
-外部包下载完后，被重新extract，会覆盖已经修改的文件，但是也要注意，如果你的patch生成了新的文件，
+外部包下载完后，被重新extract，会覆盖已经修改的文件，这自然包括那些被patch修改了的文件，但是也要注意，如果你的patch生成了新的文件，
 要想办法在PATCH_COMMAND中删除掉，否则下次重复上述过程会让patch运行时发现有文件存就会导致错误。
 
 ## 2. ExternalProject_Add与git
 
-ExternalProject_Add还允许使用git下载源码，这个时候，DOWNLOAD_DIR不起做作用，而PREFIX
+ExternalProject_Add还允许使用git下载源码，这个时候，DOWNLOAD_DIR不起作用，而PREFIX
 指定的位置用来存放git下载的源码，或者可以指定SOURCE_DIR来指定存放source code的位置。
 外部项目的制作依然包含过程download,update,patch,configure,build,install。
 例如下面的指令把brpc导入到进来:
@@ -44,8 +44,8 @@ ExternalProject_Add(brpc
 ```
 
 由于ExternalProject在每次make时都会被执行，那么如果我们有一个patch在上次已经打过了，这次update后再执行patch，patch程序就会报错，
-这个过程是自动的，很难阻止。有什么办法回避的这问题呢。一个方法是，整个过程一直从头开始，
-我们要做的就是patch之前先让git reset --hard，然后用git clean把上次patch新生成的文件也删除掉，
+这个过程是自动的，很难阻止。有什么办法回避这个问题呢? 一个方法是，整个过程从头开始，
+我们要做的就是在patch之前先执行git reset --hard，然后用git clean把上次patch新生成的文件也删除掉，
 然后再用COMMAND patch指令打上patch。
 
 ## 3. 总结
